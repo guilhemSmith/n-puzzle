@@ -1,5 +1,6 @@
 use std::cmp::{self, Eq, Ord, PartialEq, PartialOrd};
 use std::fmt;
+use std::mem;
 
 #[derive(Debug)]
 pub struct State {
@@ -27,9 +28,21 @@ impl State {
 	}
 
 	pub fn goal(size: usize) -> Self {
-		let mut cells = Vec::with_capacity(size * size);
-		for i in 0..size * size {
-			cells.push(i as u8);
+		let mut cells = vec![0; size * size];
+		let mut x = -1;
+		let mut y = 0;
+		let mut x_dir = 1;
+		let mut y_dir = 0;
+		let mut val = 0;
+		for n in 0..(size as i32) * 2 {
+			for _ in 0..(size as i32 - (n + 1) / 2) {
+				val += 1;
+				cells[index(x + x_dir, y + y_dir, size)] = val % (size * size) as u8;
+				x += x_dir;
+				y += y_dir;
+			}
+			mem::swap(&mut x_dir, &mut y_dir);
+			x_dir *= -1;
 		}
 		State {
 			cells,
