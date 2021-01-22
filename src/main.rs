@@ -3,9 +3,11 @@ mod distance;
 mod generation;
 mod puzzle;
 
-fn main() {
+use std::error;
+
+fn main() -> Result<(), Box<dyn error::Error>> {
     let filename = "toast.txt";
-    let (size, start) = generation::from_file(filename).unwrap();
+    let (size, start) = generation::from_file(filename)?;
     let goal = puzzle::State::goal(size);
     if let Some(solution) = algorithm::a_star(start, goal, distance::manhattan) {
         println!("solution found !");
@@ -15,4 +17,5 @@ fn main() {
     } else {
         println!("no solution found !");
     }
+    Ok(())
 }
