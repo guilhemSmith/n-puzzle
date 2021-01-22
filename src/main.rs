@@ -1,5 +1,4 @@
 mod algorithm;
-mod errors;
 mod puzzle;
 
 fn main() {

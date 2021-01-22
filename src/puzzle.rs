@@ -79,8 +79,13 @@ impl State {
 		&self.cells
 	}
 
-	fn access(&self, x: i32, y: i32) -> u8 {
+	pub fn access(&self, x: i32, y: i32) -> u8 {
 		self.cells[index(x, y, self.size)]
+	}
+
+	pub fn coord(&self, value: u8) -> (i32, i32) {
+		let index = self.cells.iter().position(|val| val == &value).unwrap();
+		return ((index % self.size) as i32, (index / self.size) as i32);
 	}
 
 	pub fn cost(&self) -> &i32 {
