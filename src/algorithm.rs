@@ -19,10 +19,10 @@ pub fn solve(start: State) -> Option<Vec<State>> {
 				|| open_queue
 					.iter()
 					.find(|state| state.cells() == neighbor.cells())
-					.map_or(false, |state| state.cost_g() < neighbor.cost_g()))
+					.map_or(false, |state| state.cost() < neighbor.cost()))
 			{
-				*(neighbor.cost_g_mut()) = current_state.cost_g() + 1;
-				*(neighbor.dist_h_mut()) = neighbor.cost_g() + distance(&neighbor, &goal);
+				*(neighbor.cost_mut()) = current_state.cost() + 1;
+				*(neighbor.heuristic_mut()) = neighbor.cost() + distance(&neighbor, &goal);
 				open_queue.push(neighbor);
 			}
 		}

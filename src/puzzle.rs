@@ -5,8 +5,8 @@ use std::fmt;
 pub struct State {
 	cells: Vec<u8>,
 	size: usize,
-	cost_g: i32,
-	dist_h: i32,
+	cost: i32,
+	heuristic: i32,
 }
 
 fn index(x: i32, y: i32, size: usize) -> usize {
@@ -21,8 +21,8 @@ impl State {
 		State {
 			cells,
 			size,
-			cost_g: 0,
-			dist_h: 0,
+			cost: 0,
+			heuristic: 0,
 		}
 	}
 
@@ -34,8 +34,8 @@ impl State {
 		State {
 			cells,
 			size,
-			cost_g: 0,
-			dist_h: 0,
+			cost: 0,
+			heuristic: 0,
 		}
 	}
 
@@ -83,20 +83,20 @@ impl State {
 		self.cells[index(x, y, self.size)]
 	}
 
-	pub fn cost_g(&self) -> &i32 {
-		&self.cost_g
+	pub fn cost(&self) -> &i32 {
+		&self.cost
 	}
 
-	pub fn cost_g_mut(&mut self) -> &mut i32 {
-		&mut self.cost_g
+	pub fn cost_mut(&mut self) -> &mut i32 {
+		&mut self.cost
 	}
 
-	pub fn _dist_h(&self) -> &i32 {
-		&self.dist_h
+	pub fn _heuristic(&self) -> &i32 {
+		&self.heuristic
 	}
 
-	pub fn dist_h_mut(&mut self) -> &mut i32 {
-		&mut self.dist_h
+	pub fn heuristic_mut(&mut self) -> &mut i32 {
+		&mut self.heuristic
 	}
 }
 
@@ -108,13 +108,13 @@ impl PartialOrd for State {
 
 impl Ord for State {
 	fn cmp(&self, other: &Self) -> cmp::Ordering {
-		self.dist_h.cmp(&other.dist_h)
+		self.heuristic.cmp(&other.heuristic)
 	}
 }
 
 impl PartialEq for State {
 	fn eq(&self, other: &Self) -> bool {
-		self.dist_h == other.dist_h
+		self.heuristic == other.heuristic
 	}
 }
 
@@ -122,7 +122,7 @@ impl Eq for State {}
 
 impl fmt::Display for State {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		let mut output = format!("  cost_g: {}\n  dist_h: {}\n", self.cost_g, self.dist_h);
+		let mut output = format!("  g: {}\n  h: {}\n", self.cost, self.heuristic);
 		for i in 0..self.size as i32 {
 			output.push_str("\n|");
 			for j in 0..self.size as i32 {
