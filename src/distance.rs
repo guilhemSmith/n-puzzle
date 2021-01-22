@@ -1,8 +1,8 @@
-use crate::puzzle::State;
+use crate::puzzle;
 
-pub type DistanceFn = fn(&State, &State) -> i32;
+pub type Method = fn(&puzzle::State, &puzzle::State) -> i32;
 
-pub fn manhattan(a: &State, b: &State) -> i32 {
+pub fn manhattan(a: &puzzle::State, b: &puzzle::State) -> i32 {
 	let mut manhattan = 0;
 	let n = a.size() as i32;
 	for x in 0..n {

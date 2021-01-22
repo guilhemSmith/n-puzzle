@@ -1,14 +1,22 @@
-use crate::distance::DistanceFn;
-use crate::puzzle::State;
+use crate::distance;
+use crate::puzzle;
 
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 
-pub type Algo = fn(start: State, goal: State, distance: DistanceFn) -> Option<Vec<State>>;
+pub type Algo = fn(
+	start: puzzle::State,
+	goal: puzzle::State,
+	distance: distance::Method,
+) -> Option<Vec<puzzle::State>>;
 
-pub fn a_star(mut start: State, goal: State, distance: DistanceFn) -> Option<Vec<State>> {
-	let mut closed_queue: Vec<State> = Vec::new();
-	let mut open_queue: BinaryHeap<Reverse<State>> = BinaryHeap::new();
+pub fn a_star(
+	mut start: puzzle::State,
+	goal: puzzle::State,
+	distance: distance::Method,
+) -> Option<Vec<puzzle::State>> {
+	let mut closed_queue: Vec<puzzle::State> = Vec::new();
+	let mut open_queue: BinaryHeap<Reverse<puzzle::State>> = BinaryHeap::new();
 
 	*(start.heuristic_mut()) = distance(&start, &goal);
 	open_queue.push(Reverse(start));
