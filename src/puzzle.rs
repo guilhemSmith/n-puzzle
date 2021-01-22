@@ -1,3 +1,4 @@
+use std::cmp::{self, Eq, Ord, PartialEq, PartialOrd};
 use std::fmt;
 
 #[derive(Debug)]
@@ -41,6 +42,26 @@ impl State {
 		&mut self.dist_h
 	}
 }
+
+impl PartialOrd for State {
+	fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
+		Some(self.cmp(other))
+	}
+}
+
+impl Ord for State {
+	fn cmp(&self, other: &Self) -> cmp::Ordering {
+		self.dist_h.cmp(&other.dist_h)
+	}
+}
+
+impl PartialEq for State {
+	fn eq(&self, other: &Self) -> bool {
+		self.dist_h == other.dist_h
+	}
+}
+
+impl Eq for State {}
 
 impl fmt::Display for State {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
