@@ -4,12 +4,6 @@ use crate::puzzle;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 
-pub type Algo = fn(
-	start: puzzle::State,
-	goal: puzzle::State,
-	distance: distance::Method,
-) -> Option<Vec<puzzle::State>>;
-
 pub fn a_star(
 	mut start: puzzle::State,
 	goal: puzzle::State,
