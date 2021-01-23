@@ -2,12 +2,13 @@ use std::cmp::{self, Eq, Ord, PartialEq, PartialOrd};
 use std::fmt;
 use std::mem;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct State {
 	cells: Vec<u8>,
 	size: usize,
 	cost: i32,
 	heuristic: i32,
+	predecessor: Option<usize>,
 }
 
 fn index(x: i32, y: i32, size: usize) -> usize {
@@ -24,6 +25,7 @@ impl State {
 			size,
 			cost: 0,
 			heuristic: 0,
+			predecessor: None,
 		}
 	}
 
@@ -49,6 +51,7 @@ impl State {
 			size,
 			cost: 0,
 			heuristic: 0,
+			predecessor: None,
 		}
 	}
 
@@ -81,7 +84,21 @@ impl State {
 			index(x_empty + x_neighbor, y_empty + y_neighbor, self.size),
 		);
 
-		return State::new(self.size, cells);
+		return State {
+			cells,
+			size: self.size,
+			cost: 0,
+			heuristic: 0,
+			predecessor: None,
+		};
+	}
+
+	pub fn predecessor(&self) -> &Option<usize> {
+		&self.predecessor
+	}
+
+	pub fn predecessor_mut(&mut self) -> &mut Option<usize> {
+		&mut self.predecessor
 	}
 
 	pub fn size(&self) -> usize {
