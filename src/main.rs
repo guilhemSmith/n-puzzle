@@ -1,6 +1,6 @@
 mod algorithm;
-mod distance;
 mod generation;
+mod heuristic;
 mod puzzle;
 
 use std::error;
@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         (size, puzzle::State::goal(size))
     };
     let goal = puzzle::State::goal(size);
-    if let Some(solution) = algorithm::a_star(start, goal, distance::manhattan) {
+    if let Some(solution) = algorithm::a_star(start, goal, heuristic::manhattan) {
         println!("solution found !");
         for step in solution.iter().rev() {
             println!("\n --- \n{}", step);

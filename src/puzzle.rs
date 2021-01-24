@@ -7,7 +7,7 @@ pub struct State {
 	cells: Vec<u8>,
 	size: usize,
 	cost: i32,
-	heuristic: i32,
+	score: i32,
 	predecessor: Option<usize>,
 }
 
@@ -24,7 +24,7 @@ impl State {
 			cells,
 			size,
 			cost: 0,
-			heuristic: 0,
+			score: 0,
 			predecessor: None,
 		}
 	}
@@ -50,7 +50,7 @@ impl State {
 			cells,
 			size,
 			cost: 0,
-			heuristic: 0,
+			score: 0,
 			predecessor: None,
 		}
 	}
@@ -88,7 +88,7 @@ impl State {
 			cells,
 			size: self.size,
 			cost: 0,
-			heuristic: 0,
+			score: 0,
 			predecessor: None,
 		};
 	}
@@ -126,12 +126,12 @@ impl State {
 		&mut self.cost
 	}
 
-	pub fn _heuristic(&self) -> &i32 {
-		&self.heuristic
+	pub fn _score(&self) -> &i32 {
+		&self.score
 	}
 
-	pub fn heuristic_mut(&mut self) -> &mut i32 {
-		&mut self.heuristic
+	pub fn score_mut(&mut self) -> &mut i32 {
+		&mut self.score
 	}
 }
 
@@ -143,13 +143,13 @@ impl PartialOrd for State {
 
 impl Ord for State {
 	fn cmp(&self, other: &Self) -> cmp::Ordering {
-		self.heuristic.cmp(&other.heuristic)
+		self.score.cmp(&other.score)
 	}
 }
 
 impl PartialEq for State {
 	fn eq(&self, other: &Self) -> bool {
-		self.heuristic == other.heuristic
+		self.score == other.score
 	}
 }
 
@@ -157,7 +157,7 @@ impl Eq for State {}
 
 impl fmt::Display for State {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		let mut output = format!("  g: {}\n  h: {}\n", self.cost, self.heuristic);
+		let mut output = format!("  g: {}\n  h: {}\n", self.cost, self.score);
 		for i in 0..self.size as i32 {
 			output.push_str("\n|");
 			for j in 0..self.size as i32 {
