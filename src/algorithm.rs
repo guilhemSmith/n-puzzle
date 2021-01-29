@@ -8,11 +8,12 @@ pub fn a_star(
 	mut start: puzzle::State,
 	goal: puzzle::State,
 	heuristic: heuristic::Method,
-) -> Option<Vec<puzzle::State>> {
+) -> puzzle::Solution {
 	let mut closed_queue: Vec<puzzle::State> = Vec::new();
 	let mut seen: HashSet<Vec<u8>> = HashSet::new();
 	let mut open_queue: BinaryHeap<Reverse<puzzle::State>> = BinaryHeap::new();
 	let mut tocheck: HashSet<Vec<u8>> = HashSet::new();
+	let mut solution = puzzle::Solution::new();
 
 	*(start.score_mut()) = heuristic(&start, &goal);
 	tocheck.insert(start.cells().clone());
@@ -21,8 +22,7 @@ pub fn a_star(
 		tocheck.remove(current_state.cells());
 		if current_state.cells() == goal.cells() {
 			closed_queue.push(current_state);
-			println!("{}", closed_queue.len());
-			return Some(build_solution(closed_queue));
+			return solution.build_solution(closed_queue);
 		}
 		for mut neighbor in current_state.neighbors() {
 			*(neighbor.cost_mut()) = current_state.cost() + 1;
@@ -42,21 +42,10 @@ pub fn a_star(
 			}
 		}
 		if !seen.insert(current_state.cells().clone()) {
-			println!("{}", current_state);
-			return None;
+			return solution;
 		}
 		closed_queue.push(current_state);
+		solution.update_complexity(closed_queue.len() + open_queue.len());
 	}
-	return None;
-}
-
-fn build_solution(closed_queue: Vec<puzzle::State>) -> Vec<puzzle::State> {
-	let mut solution = Vec::new();
-	let mut current_state = closed_queue.last().unwrap();
-	while let Some(index) = *current_state.predecessor() {
-		solution.push(current_state.clone());
-		current_state = &closed_queue[index];
-	}
-	solution.push(current_state.clone());
 	return solution;
 }

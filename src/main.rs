@@ -16,14 +16,30 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         (size, puzzle::State::goal(size))
     };
     let goal = puzzle::State::goal(size);
-    if let Some(solution) = algorithm::a_star(start, goal, heuristic::manhattan) {
-        println!("solution found !");
-        for step in solution.iter().rev() {
-            println!("\n --- \n{}", step);
+    let solution = algorithm::a_star(start, goal, heuristic::manhattan);
+    let split_line = format!(
+        " {:-^size$} ",
+        "",
+        size = size * if size > 3 { 5 } else { 3 }
+    );
+    if let Some(moves) = solution.moves() {
+        for step in moves.iter().rev() {
+            println!("\n{}\n{}", split_line, step);
         }
+        println!(
+            "\n{}\n\npuzzle solved in {} moves.",
+            split_line,
+            moves.len() - 1
+        );
     } else {
-        println!("no solution found !");
+        println!("\n{}\n\npuzzle unsolvable.", split_line);
     }
+    println!(
+        "\n{}\n\ntime complexity: {}\nsize complexity: {}",
+        split_line,
+        solution.time_complexity(),
+        solution.size_complexity()
+    );
     Ok(())
 }
 

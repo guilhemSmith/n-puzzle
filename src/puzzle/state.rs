@@ -157,7 +157,7 @@ impl Eq for State {}
 
 impl fmt::Display for State {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		let mut output = format!("  g: {}\n  h: {}\n", self.cost, self.score);
+		let mut output = String::new();
 		for i in 0..self.size as i32 {
 			output.push_str("\n|");
 			for j in 0..self.size as i32 {
