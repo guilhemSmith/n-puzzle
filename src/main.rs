@@ -3,6 +3,7 @@ mod generation;
 mod heuristic;
 mod puzzle;
 
+use colored::*;
 use std::error;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
@@ -21,7 +22,8 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         " {:-^size$} ",
         "",
         size = size * if size > 3 { 5 } else { 3 }
-    );
+    )
+    .dimmed();
     if let Some(moves) = solution.moves() {
         for step in moves.iter().rev() {
             println!("\n{}\n{}", split_line, step);

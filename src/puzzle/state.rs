@@ -1,3 +1,4 @@
+use colored::*;
 use std::cmp::{self, Eq, Ord, PartialEq, PartialOrd};
 use std::fmt;
 use std::mem;
@@ -8,6 +9,7 @@ pub struct State {
 	size: usize,
 	cost: i32,
 	score: i32,
+	moved: Option<(i32, i32)>,
 	predecessor: Option<usize>,
 }
 
@@ -25,6 +27,7 @@ impl State {
 			size,
 			cost: 0,
 			score: 0,
+			moved: None,
 			predecessor: None,
 		}
 	}
@@ -51,6 +54,7 @@ impl State {
 			size,
 			cost: 0,
 			score: 0,
+			moved: None,
 			predecessor: None,
 		}
 	}
@@ -89,6 +93,7 @@ impl State {
 			size: self.size,
 			cost: 0,
 			score: 0,
+			moved: Some((x_empty, y_empty)),
 			predecessor: None,
 		};
 	}
@@ -159,15 +164,21 @@ impl fmt::Display for State {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		let mut output = String::new();
 		for i in 0..self.size as i32 {
-			output.push_str("\n|");
+			output = format!("{}{}", output, "\n|".dimmed());
 			for j in 0..self.size as i32 {
-				output += &format!(
-					" {:^size$} ",
-					self.access(j, i),
+				let value = self.access(j, i);
+				let value_colored = match self.moved {
+					Some((x, y)) if x == j && y == i || value == 0 => format!("{}", value).green(),
+					_ => format!("{}", value).white(),
+				};
+				output = format!(
+					"{} {:^size$} ",
+					output,
+					value_colored,
 					size = if self.size > 3 { 3 } else { 1 }
 				)
 			}
-			output.push('|');
+			output = format!("{}{}", output, "|".dimmed());
 		}
 		write!(f, "{}", output)
 	}
