@@ -4,6 +4,16 @@ use crate::puzzle;
 use std::cmp::Reverse;
 use std::collections::{BinaryHeap, HashSet};
 
+pub fn has_solution(start: &puzzle::StateUnknown) -> bool {
+	let inversions = start.count_inversion();
+	if start.size() % 2 == 0 {
+		let empty_row = start.row_of_empty();
+		return (inversions + empty_row) % 2 != 0;
+	} else {
+		return inversions % 2 == 0;
+	}
+}
+
 pub fn a_star(
 	mut start: puzzle::StateUnknown,
 	goal: puzzle::StateUnknown,

@@ -21,6 +21,12 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         (size, start)
     };
     let goal = puzzle::StateUnknown::goal(size);
+    println!(
+        "{}:{}",
+        start.count_inversion(),
+        algorithm::has_solution(&start)
+    );
+    return Ok(());
     let solution = algorithm::a_star(start, goal, heuristic::manhattan);
     let split_line = format!(
         " {:-^size$} ",

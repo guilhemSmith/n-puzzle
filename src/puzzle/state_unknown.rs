@@ -159,6 +159,31 @@ impl StateUnknown {
 	pub fn score_mut(&mut self) -> &mut i32 {
 		&mut self.score
 	}
+
+	pub fn count_inversion(&self) -> i32 {
+		let goal = StateUnknown::goal(self.size);
+		let mut inv = 0;
+
+		for (i, fake_val) in self.cells.iter().enumerate() {
+			if *fake_val != 0 {
+				let (x_i, y_i) = goal.coord(*fake_val);
+				let val_i = index(x_i, y_i, self.size);
+				for j in 0..i {
+					let (x_j, y_j) = goal.coord(self.cells[j]);
+					let val_j = index(x_j, y_j, self.size);
+					if self.cells[j] > 0 && val_j > val_i {
+						inv += 1;
+					}
+				}
+			}
+		}
+		return inv;
+	}
+
+	pub fn row_of_empty(&self) -> i32 {
+		let (x, y) = self.coord(0);
+		return (self.size - 1 - index(x, y, self.size) % self.size) as i32;
+	}
 }
 
 impl PartialOrd for StateUnknown {
