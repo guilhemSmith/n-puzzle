@@ -1,4 +1,5 @@
 use colored::*;
+use rand::prelude::*;
 use std::cmp::{self, Eq, Ord, PartialEq, PartialOrd};
 use std::fmt;
 use std::mem;
@@ -96,6 +97,20 @@ impl State {
 			moved: Some((x_empty, y_empty)),
 			predecessor: None,
 		};
+	}
+
+	pub fn shuffle(&mut self) {
+		let mut neighbors = self.neighbors();
+		let choice = random::<usize>() % neighbors.len();
+		self.cells = neighbors.swap_remove(choice).cells;
+	}
+
+	pub fn corrupt(&mut self) {
+		if self.cells[0] == 0 || self.cells[1] == 0 {
+			self.cells.swap(self.size - 1, self.size - 2);
+		} else {
+			self.cells.swap(0, 1);
+		}
 	}
 
 	pub fn predecessor(&self) -> &Option<usize> {

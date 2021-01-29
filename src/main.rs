@@ -11,10 +11,13 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     let (size, start) = if let Some(filename) = arguments.value_of("file") {
         generation::from_file(filename)?
     } else {
-        println!("puzzle generation not done yet");
         let size = arguments.value_of("size").unwrap_or("3").parse()?;
-        let _without_solution = arguments.is_present("without_solution");
-        (size, puzzle::State::goal(size))
+        let without_solution = arguments.is_present("without_solution");
+        let iterations = arguments.value_of("iterations").unwrap_or("1000").parse()?;
+        (
+            size,
+            generation::random(size, !without_solution, iterations),
+        )
     };
     let goal = puzzle::State::goal(size);
     let solution = algorithm::a_star(start, goal, heuristic::manhattan);
@@ -64,6 +67,8 @@ fn read_arguments<'a>() -> clap::ArgMatches<'a> {
                 .short("s")
                 .long("size")
                 .value_name("NUMBER")
+                .possible_values(&["3", "4", "5", "6", "7"])
+                .hide_possible_values(true)
                 .conflicts_with("file")
                 .help("The size of the puzzle to generate, it will have size x size cells"),
         )
@@ -74,6 +79,19 @@ fn read_arguments<'a>() -> clap::ArgMatches<'a> {
                 .takes_value(false)
                 .conflicts_with("file")
                 .help("Specify the generated puzzle to not have a solution"),
+        )
+        .arg(
+            clap::Arg::with_name("iterations")
+                .short("i")
+                .long("iterations")
+                .value_name("NUMBER")
+                .validator(|raw| {
+                    raw.parse::<usize>()
+                        .map(|_| ())
+                        .map_err(|_| String::from("not a valid number"))
+                })
+                .conflicts_with("file")
+                .help("The number of iterations to do when generating a puzzle"),
         )
         .get_matches()
 }

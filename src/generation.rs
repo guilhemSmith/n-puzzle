@@ -7,6 +7,19 @@ use std::fs;
 use std::io::{self, BufRead};
 use std::num;
 
+pub fn random(size: usize, solvable: bool, iteration: usize) -> puzzle::State {
+	let mut state = puzzle::State::goal(size);
+
+	for _ in 0..iteration {
+		state.shuffle();
+	}
+	if !solvable {
+		state.corrupt();
+	}
+
+	return state;
+}
+
 pub fn from_file(filename: &str) -> Result<(usize, puzzle::State), Error> {
 	let file = fs::File::open(filename)?;
 	let reader = io::BufReader::new(file);
