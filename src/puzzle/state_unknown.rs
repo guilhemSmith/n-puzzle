@@ -5,25 +5,25 @@ use std::fmt;
 use std::mem;
 
 #[derive(Debug, Clone)]
-pub struct State {
+pub struct StateUnknown {
 	cells: Vec<u8>,
 	size: usize,
 	cost: i32,
 	score: i32,
 	moved: Option<(i32, i32)>,
-	predecessor: Option<usize>,
+	predecessor: Option<Vec<u8>>,
 }
 
 fn index(x: i32, y: i32, size: usize) -> usize {
 	return x as usize + y as usize * size;
 }
 
-impl State {
+impl StateUnknown {
 	pub fn new(size: usize, cells: Vec<u8>) -> Self {
 		if cells.len() != size * size {
 			panic!("Trying to create incorrectly sized state.")
 		}
-		State {
+		StateUnknown {
 			cells,
 			size,
 			cost: 0,
@@ -50,7 +50,7 @@ impl State {
 			mem::swap(&mut x_dir, &mut y_dir);
 			x_dir *= -1;
 		}
-		State {
+		StateUnknown {
 			cells,
 			size,
 			cost: 0,
@@ -81,7 +81,13 @@ impl State {
 		return neighbors;
 	}
 
-	fn neighbor(&self, x_empty: i32, y_empty: i32, x_neighbor: i32, y_neighbor: i32) -> State {
+	fn neighbor(
+		&self,
+		x_empty: i32,
+		y_empty: i32,
+		x_neighbor: i32,
+		y_neighbor: i32,
+	) -> StateUnknown {
 		let mut cells = self.cells.clone();
 
 		cells.swap(
@@ -89,13 +95,13 @@ impl State {
 			index(x_empty + x_neighbor, y_empty + y_neighbor, self.size),
 		);
 
-		return State {
+		return StateUnknown {
 			cells,
 			size: self.size,
 			cost: 0,
 			score: 0,
 			moved: Some((x_empty, y_empty)),
-			predecessor: None,
+			predecessor: Some(self.cells.clone()),
 		};
 	}
 
@@ -113,12 +119,8 @@ impl State {
 		}
 	}
 
-	pub fn predecessor(&self) -> &Option<usize> {
+	pub fn predecessor(&self) -> &Option<Vec<u8>> {
 		&self.predecessor
-	}
-
-	pub fn predecessor_mut(&mut self) -> &mut Option<usize> {
-		&mut self.predecessor
 	}
 
 	pub fn size(&self) -> usize {
@@ -146,6 +148,10 @@ impl State {
 		&mut self.cost
 	}
 
+	pub fn moved(&self) -> Option<(i32, i32)> {
+		self.moved
+	}
+
 	pub fn _score(&self) -> &i32 {
 		&self.score
 	}
@@ -155,27 +161,27 @@ impl State {
 	}
 }
 
-impl PartialOrd for State {
+impl PartialOrd for StateUnknown {
 	fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
 		Some(self.cmp(other))
 	}
 }
 
-impl Ord for State {
+impl Ord for StateUnknown {
 	fn cmp(&self, other: &Self) -> cmp::Ordering {
 		self.score.cmp(&other.score)
 	}
 }
 
-impl PartialEq for State {
+impl PartialEq for StateUnknown {
 	fn eq(&self, other: &Self) -> bool {
 		self.score == other.score
 	}
 }
 
-impl Eq for State {}
+impl Eq for StateUnknown {}
 
-impl fmt::Display for State {
+impl fmt::Display for StateUnknown {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		let mut output = String::new();
 		for i in 0..self.size as i32 {

@@ -1,7 +1,9 @@
+use std::collections::HashSet;
+
 pub struct Solution {
 	time_complexity: usize,
 	size_complexity: usize,
-	moves: Option<Vec<super::State>>,
+	moves: Option<Vec<super::StateUsed>>,
 }
 
 impl Solution {
@@ -20,17 +22,22 @@ impl Solution {
 		}
 	}
 
-	pub fn build_solution(self, closed_queue: Vec<super::State>) -> Self {
+	pub fn build_solution(
+		self,
+		mut closed_set: HashSet<super::StateUsed>,
+		last_state: super::StateUsed,
+	) -> Self {
 		let time_complexity = self.time_complexity;
 		let size_complexity = self.size_complexity;
 		let mut moves = Vec::new();
 
-		let mut current_state = closed_queue.last().unwrap();
-		while let Some(index) = *current_state.predecessor() {
-			moves.push(current_state.clone());
-			current_state = &closed_queue[index];
+		let mut current_state = last_state;
+		while let Some(prev) = current_state.predecessor() {
+			let next = closed_set.take(prev);
+			moves.push(current_state);
+			current_state = next.unwrap();
 		}
-		moves.push(current_state.clone());
+		moves.push(current_state);
 		let moves = Some(moves);
 
 		return Solution {
@@ -40,7 +47,7 @@ impl Solution {
 		};
 	}
 
-	pub fn moves(&self) -> &Option<Vec<super::State>> {
+	pub fn moves(&self) -> &Option<Vec<super::StateUsed>> {
 		&self.moves
 	}
 

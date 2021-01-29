@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         println!("puzzle generated:\n{}", start);
         (size, start)
     };
-    let goal = puzzle::State::goal(size);
+    let goal = puzzle::StateUnknown::goal(size);
     let solution = algorithm::a_star(start, goal, heuristic::manhattan);
     let split_line = format!(
         " {:-^size$} ",

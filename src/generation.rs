@@ -7,8 +7,8 @@ use std::fs;
 use std::io::{self, BufRead};
 use std::num;
 
-pub fn random(size: usize, solvable: bool, iteration: usize) -> puzzle::State {
-	let mut state = puzzle::State::goal(size);
+pub fn random(size: usize, solvable: bool, iteration: usize) -> puzzle::StateUnknown {
+	let mut state = puzzle::StateUnknown::goal(size);
 
 	for _ in 0..iteration {
 		state.shuffle();
@@ -20,7 +20,7 @@ pub fn random(size: usize, solvable: bool, iteration: usize) -> puzzle::State {
 	return state;
 }
 
-pub fn from_file(filename: &str) -> Result<(usize, puzzle::State), Error> {
+pub fn from_file(filename: &str) -> Result<(usize, puzzle::StateUnknown), Error> {
 	let file = fs::File::open(filename)?;
 	let reader = io::BufReader::new(file);
 	let mut size = None;
@@ -43,7 +43,7 @@ pub fn from_file(filename: &str) -> Result<(usize, puzzle::State), Error> {
 	if cells.len() != fixed_size * fixed_size {
 		return Err(Error::BadPuzzle);
 	}
-	return Ok((fixed_size, puzzle::State::new(fixed_size, cells)));
+	return Ok((fixed_size, puzzle::StateUnknown::new(fixed_size, cells)));
 }
 
 fn read_size(line: String) -> Result<Option<usize>, Error> {

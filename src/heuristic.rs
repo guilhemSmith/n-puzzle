@@ -1,8 +1,8 @@
 use crate::puzzle;
 
-pub type Method = fn(&puzzle::State, &puzzle::State) -> i32;
+pub type Method = fn(&puzzle::StateUnknown, &puzzle::StateUnknown) -> i32;
 
-pub fn manhattan(a: &puzzle::State, b: &puzzle::State) -> i32 {
+pub fn manhattan(a: &puzzle::StateUnknown, b: &puzzle::StateUnknown) -> i32 {
 	let mut manhattan = 0;
 	let n = a.size() as i32;
 	for x in 0..n {
