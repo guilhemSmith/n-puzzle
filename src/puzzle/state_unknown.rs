@@ -160,8 +160,7 @@ impl StateUnknown {
 		&mut self.score
 	}
 
-	pub fn count_inversion(&self) -> i32 {
-		let goal = StateUnknown::goal(self.size);
+	pub fn count_inversion(&self, goal: &Self) -> i32 {
 		let mut inv = 0;
 
 		for (i, fake_val) in self.cells.iter().enumerate() {
@@ -180,9 +179,10 @@ impl StateUnknown {
 		return inv;
 	}
 
-	pub fn row_of_empty(&self) -> i32 {
-		let (x, y) = self.coord(0);
-		return (self.size - 1 - index(x, y, self.size) % self.size) as i32;
+	pub fn row_of_empty(&self, goal: &Self) -> i32 {
+		let (_, y0) = self.coord(0);
+		let (_, y1) = goal.coord(0);
+		return (y1 - y0).abs();
 	}
 }
 

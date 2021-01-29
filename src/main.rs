@@ -21,19 +21,17 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         (size, start)
     };
     let goal = puzzle::StateUnknown::goal(size);
-    println!(
-        "{}:{}",
-        start.count_inversion(),
-        algorithm::has_solution(&start)
-    );
-    return Ok(());
-    let solution = algorithm::a_star(start, goal, heuristic::manhattan);
     let split_line = format!(
         " {:-^size$} ",
         "",
         size = size * if size > 3 { 5 } else { 3 }
     )
     .dimmed();
+    if !algorithm::has_solution(&start, &goal) {
+        println!("\n{}\n\npuzzle unsolvable.", split_line);
+        return Ok(());
+    }
+    let solution = algorithm::a_star(start, goal, heuristic::manhattan);
     if let Some(moves) = solution.moves() {
         println!("\n{}\n\nsolution moves:", split_line);
         for step in moves.iter().rev() {
