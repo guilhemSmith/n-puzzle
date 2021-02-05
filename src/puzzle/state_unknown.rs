@@ -194,7 +194,7 @@ impl PartialOrd for StateUnknown {
 
 impl Ord for StateUnknown {
 	fn cmp(&self, other: &Self) -> cmp::Ordering {
-		self.score.cmp(&other.score)
+		self.score.cmp(&other.score).reverse()
 	}
 }
 

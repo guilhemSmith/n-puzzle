@@ -1,7 +1,6 @@
 use crate::heuristic;
 use crate::puzzle;
 
-use std::cmp::Reverse;
 use std::collections::{BinaryHeap, HashSet};
 
 pub fn has_solution(start: &puzzle::StateUnknown, goal: &puzzle::StateUnknown) -> bool {
@@ -20,12 +19,12 @@ pub fn a_star(
 	heuristic: heuristic::Method,
 ) -> puzzle::Solution {
 	let mut closed_set: HashSet<puzzle::StateUsed> = HashSet::new();
-	let mut open_queue: BinaryHeap<Reverse<puzzle::StateUnknown>> = BinaryHeap::new();
+	let mut open_queue: BinaryHeap<puzzle::StateUnknown> = BinaryHeap::new();
 	let mut solution = puzzle::Solution::new();
 
 	*(start.score_mut()) = heuristic(&start, &goal);
-	open_queue.push(Reverse(start));
-	while let Some(Reverse(current_state)) = open_queue.pop() {
+	open_queue.push(start);
+	while let Some(current_state) = open_queue.pop() {
 		let current_used = (&current_state).into();
 		if current_state.cells() == goal.cells() {
 			return solution.build_solution(closed_set, current_used);
@@ -34,23 +33,23 @@ pub fn a_star(
 			*(neighbor.cost_mut()) = current_state.cost() + 1;
 			*(neighbor.score_mut()) = neighbor.cost() + heuristic(&neighbor, &goal);
 			if !(closed_set.contains(neighbor.cells())
-				|| open_queue.iter().any(|Reverse(state)| {
+				|| open_queue.iter().any(|state| {
 					state.cells() == neighbor.cells() && state.cost() <= neighbor.cost()
 				})) {
 				if open_queue
 					.iter()
-					.any(|Reverse(state)| state.cells() == neighbor.cells())
+					.any(|state| state.cells() == neighbor.cells())
 				{
 					let mut tmp = open_queue.into_vec();
 					if let Some(index) = tmp
 						.iter()
-						.position(|Reverse(state)| state.cells() == neighbor.cells())
+						.position(|state| state.cells() == neighbor.cells())
 					{
 						tmp.remove(index);
 					}
 					open_queue = BinaryHeap::from(tmp);
 				}
-				open_queue.push(Reverse(neighbor));
+				open_queue.push(neighbor);
 			}
 		}
 		if !closed_set.insert(current_used) {
