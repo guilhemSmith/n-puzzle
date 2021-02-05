@@ -34,7 +34,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         println!("\n{}\n\npuzzle unsolvable.", split_line);
         return Ok(());
     }
-    let solution = algorithm::a_star(start, goal, heuristic_method);
+    let solution = algorithm::w_a_star(start, goal, heuristic_method);
     if let Some(moves) = solution.moves() {
         println!("\n{}\n\nsolution moves:", split_line);
         for step in moves.iter().rev() {
