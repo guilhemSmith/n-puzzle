@@ -21,7 +21,7 @@ impl StateUsed {
 		&self.predecessor
 	}
 
-	pub fn cells(&self) -> &Vec<u8> {
+	pub fn _cells(&self) -> &Vec<u8> {
 		&self.cells
 	}
 
