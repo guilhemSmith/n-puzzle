@@ -37,6 +37,21 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 				.help("The search type used to set the score of each state"),
 		)
 		.arg(
+			clap::Arg::with_name("weight")
+				.short("w")
+				.long("weight")
+				.value_name("FLOATING NUMBER")
+				.default_value("1")
+				.validator(|raw| {
+					raw.parse::<f32>()
+						.map(|_| ())
+						.map_err(|_| String::from("not a valid number"))
+				})
+				.number_of_values(1)
+				.multiple(false)
+				.help("The weight applied to the distance when computing the score (best first search type only), the cost always has a weight of 1"),
+		)
+		.arg(
 			clap::Arg::with_name("dimension")
 				.short("d")
 				.long("dimension")
@@ -50,7 +65,7 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 		)
 		.arg(
 			clap::Arg::with_name("without_solution")
-				.short("w")
+				.short("W")
 				.long("without_solution")
 				.takes_value(false)
 				.conflicts_with("file")

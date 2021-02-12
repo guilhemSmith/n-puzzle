@@ -30,17 +30,19 @@ pub trait Tool: Sized + Copy {
 	}
 }
 
-pub fn a_star(
+pub fn w_a_star(
 	mut start: puzzle::StateUnknown,
 	goal: puzzle::StateUnknown,
 	distance: Heuristic,
 	score: SearchType,
+	weight: f32,
 ) -> puzzle::Solution {
 	let mut closed_set: HashSet<puzzle::StateUsed> = HashSet::new();
 	let mut open_queue: BinaryHeap<puzzle::StateUnknown> = BinaryHeap::new();
 	let mut solution = puzzle::Solution::new();
+	let weight_scaled: i32 = (100.0 * weight).round() as i32;
 
-	*(start.score_mut()) = score(0, distance(&start, &goal));
+	*(start.score_mut()) = score(0, distance(&start, &goal), weight_scaled);
 	open_queue.push(start);
 	while let Some(current_state) = open_queue.pop() {
 		let current_used = (&current_state).into();
@@ -49,7 +51,8 @@ pub fn a_star(
 		}
 		for mut neighbor in current_state.neighbors() {
 			*(neighbor.cost_mut()) = current_state.cost() + 1;
-			*(neighbor.score_mut()) = score(*neighbor.cost(), distance(&neighbor, &goal));
+			*(neighbor.score_mut()) =
+				score(*neighbor.cost(), distance(&neighbor, &goal), weight_scaled);
 			if !(closed_set.contains(neighbor.cells())
 				|| open_queue.iter().any(|state| {
 					state.cells() == neighbor.cells() && state.cost() <= neighbor.cost()

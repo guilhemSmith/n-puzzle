@@ -8,7 +8,7 @@ use colored::*;
 use std::error;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    let (size, start, heuristic, search_type) = setup()?;
+    let (size, start, heuristic, search_type, weight) = setup()?;
     let goal = puzzle::StateUnknown::goal(size);
     let split_line = format!(
         " {:-^size$} ",
@@ -20,13 +20,17 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         println!("\n{}\n\npuzzle unsolvable.", split_line);
         return Ok(());
     }
-    let solution = algorithm::a_star(start, goal, heuristic, search_type);
+    let solution = algorithm::w_a_star(start, goal, heuristic, search_type, weight);
     if let Some(moves) = solution.moves() {
         println!("\n{}\n\nsolution moves:", split_line);
         for step in moves.iter().rev() {
             println!("{}\n\n{}", step, split_line);
         }
-        println!("\npuzzle solved in {} moves.", moves.len() - 1);
+        println!(
+            "\nweight used: {}\npuzzle solved in {} moves.",
+            weight,
+            moves.len() - 1
+        );
     } else {
         println!("\n{}\n\npuzzle unsolvable.", split_line);
     }
@@ -44,6 +48,7 @@ fn setup() -> Result<
         puzzle::StateUnknown,
         algorithm::Heuristic,
         algorithm::SearchType,
+        f32,
     ),
     Box<dyn error::Error>,
 > {
@@ -51,6 +56,7 @@ fn setup() -> Result<
 
     let heuristic = algorithm::Heuristic::get(args.value_of("heuristic").unwrap()).unwrap();
     let search_type = algorithm::SearchType::get(args.value_of("search_type").unwrap()).unwrap();
+    let weight = args.value_of("weight").unwrap().parse()?;
     let (size, start) = if let Some(filename) = args.value_of("file") {
         let (size, start) = generation::from_file(filename)?;
         println!("puzzle parsed:\n{}", start);
@@ -63,5 +69,5 @@ fn setup() -> Result<
         println!("puzzle generated:\n{}", start);
         (size, start)
     };
-    return Ok((size, start, heuristic, search_type));
+    return Ok((size, start, heuristic, search_type, weight));
 }
