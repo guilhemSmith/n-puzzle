@@ -1,4 +1,5 @@
-use crate::heuristic;
+pub mod heuristic;
+
 use crate::puzzle;
 
 use std::collections::{BinaryHeap, HashSet};
@@ -13,7 +14,7 @@ pub fn has_solution(start: &puzzle::StateUnknown, goal: &puzzle::StateUnknown) -
 	}
 }
 
-pub fn w_a_star(
+pub fn a_star(
 	mut start: puzzle::StateUnknown,
 	goal: puzzle::StateUnknown,
 	heuristic: heuristic::Method,
@@ -22,7 +23,7 @@ pub fn w_a_star(
 	let mut open_queue: BinaryHeap<puzzle::StateUnknown> = BinaryHeap::new();
 	let mut solution = puzzle::Solution::new();
 
-	*(start.score_mut()) = 2 * heuristic(&start, &goal);
+	*(start.score_mut()) = heuristic(&start, &goal);
 	open_queue.push(start);
 	while let Some(current_state) = open_queue.pop() {
 		let current_used = (&current_state).into();
@@ -31,7 +32,7 @@ pub fn w_a_star(
 		}
 		for mut neighbor in current_state.neighbors() {
 			*(neighbor.cost_mut()) = current_state.cost() + 1;
-			*(neighbor.score_mut()) = neighbor.cost() + 2 * heuristic(&neighbor, &goal);
+			*(neighbor.score_mut()) = neighbor.cost() + heuristic(&neighbor, &goal);
 			if !(closed_set.contains(neighbor.cells())
 				|| open_queue.iter().any(|state| {
 					state.cells() == neighbor.cells() && state.cost() <= neighbor.cost()

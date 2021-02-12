@@ -17,8 +17,8 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 				.short("h")
 				.long("heuristic")
 				.value_name("HEURISTIC")
-				.possible_values(&crate::heuristic::STR_LIST)
-				.default_value(crate::heuristic::DEFAULT)
+				.possible_values(&crate::algorithm::heuristic::STR_LIST)
+				.default_value(crate::algorithm::heuristic::DEFAULT)
 				.number_of_values(1)
 				.multiple(false)
 				.help("The heuristic used to estimate score of each state"),

@@ -1,7 +1,6 @@
 mod algorithm;
 mod arguments;
 mod generation;
-mod heuristic;
 mod puzzle;
 
 use colored::*;
@@ -10,7 +9,7 @@ use std::error;
 fn main() -> Result<(), Box<dyn error::Error>> {
     let arguments = arguments::get();
     let heuristic_method =
-        heuristic::arg_to_method(arguments.value_of("heuristic").unwrap()).unwrap();
+        algorithm::heuristic::arg_to_method(arguments.value_of("heuristic").unwrap()).unwrap();
     let (size, start) = if let Some(filename) = arguments.value_of("file") {
         let (size, start) = generation::from_file(filename)?;
         println!("puzzle parsed:\n{}", start);
@@ -34,7 +33,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         println!("\n{}\n\npuzzle unsolvable.", split_line);
         return Ok(());
     }
-    let solution = algorithm::w_a_star(start, goal, heuristic_method);
+    let solution = algorithm::a_star(start, goal, heuristic_method);
     if let Some(moves) = solution.moves() {
         println!("\n{}\n\nsolution moves:", split_line);
         for step in moves.iter().rev() {
