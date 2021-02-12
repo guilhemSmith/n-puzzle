@@ -28,9 +28,13 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         for step in moves.iter().rev() {
             println!("{}\n\n{}", step, split_line);
         }
+        if let Some(search_type_arg) = args.value_of("search_type") {
+            if search_type_arg == algorithm::SearchType::DEFAULT {
+                println!("\nweight used: {}", weight);
+            }
+        }
         println!(
-            "\nweight used: {}\nheuristic used: {}\nsearch type used: {}\n\npuzzle solved in {} moves.",
-            weight,
+            "heuristic used: {}\nsearch type used: {}\n\npuzzle solved in {} moves.",
             algorithm::Heuristic::pretty_name(args.value_of("heuristic").unwrap()).unwrap(),
             algorithm::SearchType::pretty_name(args.value_of("search_type").unwrap()).unwrap(),
             moves.len() - 1
