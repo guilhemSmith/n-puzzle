@@ -1,16 +1,11 @@
 use crate::puzzle;
 
-pub const DEFAULT: &'static str = "linear_conflict+manhattan";
-pub const STR_LIST: [&'static str; 3] = ["manhattan", "hamming", "linear_conflict+manhattan"];
-pub const FN_LIST: [Method; 3] = [manhattan, hamming, linear_conflict_manhattan];
+pub type Heuristic = fn(&puzzle::StateUnknown, &puzzle::StateUnknown) -> i32;
 
-pub type Method = fn(&puzzle::StateUnknown, &puzzle::StateUnknown) -> i32;
-
-pub fn arg_to_method(arg: &str) -> Option<Method> {
-	if let Some(index) = STR_LIST.iter().position(|txt| txt == &arg) {
-		return Some(FN_LIST[index]);
-	}
-	return None;
+impl super::Tool for Heuristic {
+	const DEFAULT: &'static str = "linear_conflict+manhattan";
+	const STR_LIST: [&'static str; 3] = ["manhattan", "hamming", "linear_conflict+manhattan"];
+	const FN_LIST: [Self; 3] = [manhattan, hamming, linear_conflict_manhattan];
 }
 
 pub fn manhattan(a: &puzzle::StateUnknown, b: &puzzle::StateUnknown) -> i32 {

@@ -1,3 +1,5 @@
+use crate::algorithm::Tool;
+
 pub fn get<'a>() -> clap::ArgMatches<'a> {
 	clap::App::new("n-puzzle")
 		.version("0.1.0")
@@ -17,23 +19,34 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 				.short("h")
 				.long("heuristic")
 				.value_name("HEURISTIC")
-				.possible_values(&crate::algorithm::heuristic::STR_LIST)
-				.default_value(crate::algorithm::heuristic::DEFAULT)
+				.possible_values(&crate::algorithm::Heuristic::STR_LIST)
+				.default_value(crate::algorithm::Heuristic::DEFAULT)
 				.number_of_values(1)
 				.multiple(false)
-				.help("The heuristic used to estimate score of each state"),
+				.help("The heuristic used to estimate the distance of each state to the goal"),
 		)
 		.arg(
-			clap::Arg::with_name("size")
+			clap::Arg::with_name("search_type")
 				.short("s")
-				.long("size")
+				.long("search_type")
+				.value_name("SEARCH_TYPE")
+				.possible_values(&crate::algorithm::SearchType::STR_LIST)
+				.default_value(crate::algorithm::SearchType::DEFAULT)
+				.number_of_values(1)
+				.multiple(false)
+				.help("The search type used to set the score of each state"),
+		)
+		.arg(
+			clap::Arg::with_name("dimension")
+				.short("d")
+				.long("dimension")
 				.value_name("NUMBER")
 				.possible_values(&["3", "4", "5", "6", "7"])
 				.hide_possible_values(true)
 				.number_of_values(1)
 				.multiple(false)
 				.conflicts_with("file")
-				.help("The size of the puzzle to generate, it will have size x size cells"),
+				.help("The dimension of the puzzle to generate, it will have dimension x dimension cells"),
 		)
 		.arg(
 			clap::Arg::with_name("without_solution")

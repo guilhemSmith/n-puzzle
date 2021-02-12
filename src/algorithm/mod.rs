@@ -1,4 +1,7 @@
-pub mod heuristic;
+mod heuristic;
+pub use heuristic::Heuristic;
+mod search_type;
+pub use search_type::SearchType;
 
 use crate::puzzle;
 
@@ -14,16 +17,30 @@ pub fn has_solution(start: &puzzle::StateUnknown, goal: &puzzle::StateUnknown) -
 	}
 }
 
+pub trait Tool: Sized + Copy {
+	const DEFAULT: &'static str;
+	const STR_LIST: [&'static str; 3];
+	const FN_LIST: [Self; 3];
+
+	fn get(arg: &str) -> Option<Self> {
+		if let Some(index) = Self::STR_LIST.iter().position(|txt| txt == &arg) {
+			return Some(Self::FN_LIST[index]);
+		}
+		return None;
+	}
+}
+
 pub fn a_star(
 	mut start: puzzle::StateUnknown,
 	goal: puzzle::StateUnknown,
-	heuristic: heuristic::Method,
+	distance: Heuristic,
+	score: SearchType,
 ) -> puzzle::Solution {
 	let mut closed_set: HashSet<puzzle::StateUsed> = HashSet::new();
 	let mut open_queue: BinaryHeap<puzzle::StateUnknown> = BinaryHeap::new();
 	let mut solution = puzzle::Solution::new();
 
-	*(start.score_mut()) = heuristic(&start, &goal);
+	*(start.score_mut()) = score(0, distance(&start, &goal));
 	open_queue.push(start);
 	while let Some(current_state) = open_queue.pop() {
 		let current_used = (&current_state).into();
@@ -32,7 +49,7 @@ pub fn a_star(
 		}
 		for mut neighbor in current_state.neighbors() {
 			*(neighbor.cost_mut()) = current_state.cost() + 1;
-			*(neighbor.score_mut()) = neighbor.cost() + heuristic(&neighbor, &goal);
+			*(neighbor.score_mut()) = score(*neighbor.cost(), distance(&neighbor, &goal));
 			if !(closed_set.contains(neighbor.cells())
 				|| open_queue.iter().any(|state| {
 					state.cells() == neighbor.cells() && state.cost() <= neighbor.cost()
