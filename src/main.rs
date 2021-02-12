@@ -76,7 +76,7 @@ fn setup(
 		println!("puzzle parsed:\n{}", start);
 		(size, start)
 	} else {
-		let size = args.value_of("size").unwrap_or("3").parse()?;
+		let size = args.value_of("dimension").unwrap_or("3").parse()?;
 		let without_solution = args.is_present("without_solution");
 		let iterations = args.value_of("iterations").unwrap_or("1000").parse()?;
 		let start = generation::random(size, !without_solution, iterations);
