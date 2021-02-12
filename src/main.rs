@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 		if let Some(search_type_arg) = args.value_of("search_type") {
 			if search_type_arg == algorithm::SearchType::DEFAULT {
 				print!(
-					"\nweight used: {}",
+					"\nweight used:\t\t{}",
 					match weight {
 						w if w < 2.0 => weight.to_string().blue(),
 						w if w < 3.0 => weight.to_string().purple(),
@@ -41,17 +41,17 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 			}
 		}
 		println!(
-			"\nheuristic used: {}\nsearch type used: {}\n\npuzzle solved in {} moves.",
+			"\nheuristic used:\t\t{}\nsearch type used:\t{}\n\n{}\n\npuzzle solved in {} moves.",
 			algorithm::Heuristic::pretty_name(args.value_of("heuristic").unwrap()).unwrap(),
 			algorithm::SearchType::pretty_name(args.value_of("search_type").unwrap()).unwrap(),
+			split_line,
 			moves.len() - 1
 		);
 	} else {
 		println!("\n{}\n\npuzzle unsolvable.", split_line);
 	}
 	println!(
-		"\n{}\n\ntime complexity: {}\nsize complexity: {}",
-		split_line,
+		"\ntime complexity:\t{}\nsize complexity:\t{}",
 		solution.time_complexity(),
 		solution.size_complexity()
 	);
