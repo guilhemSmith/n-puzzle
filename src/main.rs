@@ -8,7 +8,9 @@ use colored::*;
 use std::error;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    let (size, start, heuristic, search_type, weight) = setup()?;
+    let args = arguments::get();
+
+    let (size, start, heuristic, search_type, weight) = setup(&args)?;
     let goal = puzzle::StateUnknown::goal(size);
     let split_line = format!(
         " {:-^size$} ",
@@ -27,8 +29,10 @@ fn main() -> Result<(), Box<dyn error::Error>> {
             println!("{}\n\n{}", step, split_line);
         }
         println!(
-            "\nweight used: {}\npuzzle solved in {} moves.",
+            "\nweight used: {}\nheuristic used: {}\nsearch type used: {}\n\npuzzle solved in {} moves.",
             weight,
+            algorithm::Heuristic::pretty_name(args.value_of("heuristic").unwrap()).unwrap(),
+            algorithm::SearchType::pretty_name(args.value_of("search_type").unwrap()).unwrap(),
             moves.len() - 1
         );
     } else {
@@ -42,7 +46,9 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     );
     Ok(())
 }
-fn setup() -> Result<
+fn setup(
+    args: &clap::ArgMatches,
+) -> Result<
     (
         usize,
         puzzle::StateUnknown,
@@ -52,8 +58,6 @@ fn setup() -> Result<
     ),
     Box<dyn error::Error>,
 > {
-    let args = arguments::get();
-
     let heuristic = algorithm::Heuristic::get(args.value_of("heuristic").unwrap()).unwrap();
     let search_type = algorithm::SearchType::get(args.value_of("search_type").unwrap()).unwrap();
     let weight = args.value_of("weight").unwrap().parse()?;

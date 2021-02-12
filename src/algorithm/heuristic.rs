@@ -4,8 +4,8 @@ pub type Heuristic = fn(&puzzle::StateUnknown, &puzzle::StateUnknown) -> i32;
 
 impl super::Tool for Heuristic {
 	const DEFAULT: &'static str = "linear_conflict+manhattan";
-	const STR_LIST: [&'static str; 3] = ["manhattan", "hamming", "linear_conflict+manhattan"];
-	const FN_LIST: [Self; 3] = [manhattan, hamming, linear_conflict_manhattan];
+	const STR_LIST: [&'static str; 3] = ["hamming", "manhattan", "linear_conflict+manhattan"];
+	const FN_LIST: [Self; 3] = [hamming, manhattan, linear_conflict_manhattan];
 }
 
 pub fn manhattan(a: &puzzle::StateUnknown, b: &puzzle::StateUnknown) -> i32 {

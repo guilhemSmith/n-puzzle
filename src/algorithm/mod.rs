@@ -5,6 +5,7 @@ pub use search_type::SearchType;
 
 use crate::puzzle;
 
+use colored::*;
 use std::collections::{BinaryHeap, HashSet};
 
 pub fn has_solution(start: &puzzle::StateUnknown, goal: &puzzle::StateUnknown) -> bool {
@@ -27,6 +28,18 @@ pub trait Tool: Sized + Copy {
 			return Some(Self::FN_LIST[index]);
 		}
 		return None;
+	}
+
+	fn pretty_name(argname: &str) -> Option<ColoredString> {
+		let lvl = Self::STR_LIST.iter().position(|s| *s == argname)?;
+		let clean_name = argname.replace("_", " ").replace("+", " + ");
+		let colored_name = match lvl {
+			0 => clean_name.red(),
+			1 => clean_name.purple(),
+			2 => clean_name.blue(),
+			_ => clean_name.white(),
+		};
+		return Some(colored_name);
 	}
 }
 
