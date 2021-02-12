@@ -8,6 +8,8 @@ use crate::puzzle;
 use colored::*;
 use std::collections::{BinaryHeap, HashSet};
 
+const DYN_WEIGHTS: [f32; 5] = [1.0, 1.5, 2.5, 4.0, 10.0];
+
 pub fn has_solution(start: &puzzle::StateUnknown, goal: &puzzle::StateUnknown) -> bool {
 	let inversions = start.count_inversion(&goal);
 	if start.size() % 2 == 0 {
@@ -15,6 +17,14 @@ pub fn has_solution(start: &puzzle::StateUnknown, goal: &puzzle::StateUnknown) -
 		return (inversions + empty_row) % 2 == 0;
 	} else {
 		return inversions % 2 == 0;
+	}
+}
+
+pub fn dynamic_weight(size: usize) -> f32 {
+	if size > 7 {
+		10.0
+	} else {
+		DYN_WEIGHTS[size - 3]
 	}
 }
 
@@ -36,8 +46,7 @@ pub trait Tool: Sized + Copy {
 		let colored_name = match lvl {
 			0 => clean_name.red(),
 			1 => clean_name.purple(),
-			2 => clean_name.blue(),
-			_ => clean_name.white(),
+			_ => clean_name.blue(),
 		};
 		return Some(colored_name);
 	}

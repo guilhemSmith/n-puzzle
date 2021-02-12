@@ -30,11 +30,18 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         }
         if let Some(search_type_arg) = args.value_of("search_type") {
             if search_type_arg == algorithm::SearchType::DEFAULT {
-                println!("\nweight used: {}", weight);
+                print!(
+                    "\nweight used: {}",
+                    match weight {
+                        w if w < 2.0 => weight.to_string().blue(),
+                        w if w < 3.0 => weight.to_string().purple(),
+                        _ => weight.to_string().red(),
+                    }
+                );
             }
         }
         println!(
-            "heuristic used: {}\nsearch type used: {}\n\npuzzle solved in {} moves.",
+            "\nheuristic used: {}\nsearch type used: {}\n\npuzzle solved in {} moves.",
             algorithm::Heuristic::pretty_name(args.value_of("heuristic").unwrap()).unwrap(),
             algorithm::SearchType::pretty_name(args.value_of("search_type").unwrap()).unwrap(),
             moves.len() - 1
@@ -64,7 +71,6 @@ fn setup(
 > {
     let heuristic = algorithm::Heuristic::get(args.value_of("heuristic").unwrap()).unwrap();
     let search_type = algorithm::SearchType::get(args.value_of("search_type").unwrap()).unwrap();
-    let weight = args.value_of("weight").unwrap().parse()?;
     let (size, start) = if let Some(filename) = args.value_of("file") {
         let (size, start) = generation::from_file(filename)?;
         println!("puzzle parsed:\n{}", start);
@@ -77,5 +83,9 @@ fn setup(
         println!("puzzle generated:\n{}", start);
         (size, start)
     };
+    let weight = args
+        .value_of("weight")
+        .map(|s| s.parse().unwrap())
+        .unwrap_or(crate::algorithm::dynamic_weight(size));
     return Ok((size, start, heuristic, search_type, weight));
 }

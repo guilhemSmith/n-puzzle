@@ -41,7 +41,6 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 				.short("w")
 				.long("weight")
 				.value_name("FLOATING NUMBER")
-				.default_value("1")
 				.validator(|raw| {
 					raw.parse::<f32>()
 						.map(|_| ())
@@ -49,7 +48,7 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 				})
 				.number_of_values(1)
 				.multiple(false)
-				.help("The weight applied to the distance when computing the score (best first search type only), the cost always has a weight of 1"),
+				.help("The weight applied to the distance when computing the score (best first search type only), the cost has always a weight of 1. Leave this parameter unset to use a dynamic weight"),
 		)
 		.arg(
 			clap::Arg::with_name("dimension")
