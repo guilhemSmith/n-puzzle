@@ -1,11 +1,13 @@
 use colored::*;
 use rand::prelude::*;
-use std::cmp::{self, Eq, Ord, PartialEq, PartialOrd};
+use std::borrow::Borrow;
+use std::cmp::{Eq, PartialEq};
 use std::fmt;
+use std::hash::{self, Hash};
 use std::mem;
 
 #[derive(Debug, Clone)]
-pub struct StateUnknown {
+pub struct State {
 	cells: Vec<u8>,
 	size: usize,
 	cost: i32,
@@ -18,12 +20,12 @@ fn index(x: i32, y: i32, size: usize) -> usize {
 	return x as usize + y as usize * size;
 }
 
-impl StateUnknown {
+impl State {
 	pub fn new(size: usize, cells: Vec<u8>) -> Self {
 		if cells.len() != size * size {
 			panic!("Trying to create incorrectly sized state.")
 		}
-		StateUnknown {
+		State {
 			cells,
 			size,
 			cost: 0,
@@ -50,7 +52,7 @@ impl StateUnknown {
 			mem::swap(&mut x_dir, &mut y_dir);
 			x_dir *= -1;
 		}
-		StateUnknown {
+		State {
 			cells,
 			size,
 			cost: 0,
@@ -81,13 +83,7 @@ impl StateUnknown {
 		return neighbors;
 	}
 
-	fn neighbor(
-		&self,
-		x_empty: i32,
-		y_empty: i32,
-		x_neighbor: i32,
-		y_neighbor: i32,
-	) -> StateUnknown {
+	fn neighbor(&self, x_empty: i32, y_empty: i32, x_neighbor: i32, y_neighbor: i32) -> State {
 		let mut cells = self.cells.clone();
 
 		cells.swap(
@@ -95,7 +91,7 @@ impl StateUnknown {
 			index(x_empty + x_neighbor, y_empty + y_neighbor, self.size),
 		);
 
-		return StateUnknown {
+		return State {
 			cells,
 			size: self.size,
 			cost: 0,
@@ -148,10 +144,6 @@ impl StateUnknown {
 		&mut self.cost
 	}
 
-	pub fn moved(&self) -> Option<(i32, i32)> {
-		self.moved
-	}
-
 	pub fn _score(&self) -> &i32 {
 		&self.score
 	}
@@ -186,27 +178,27 @@ impl StateUnknown {
 	}
 }
 
-impl PartialOrd for StateUnknown {
-	fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
-		Some(self.cmp(other))
+impl Hash for State {
+	fn hash<H: hash::Hasher>(&self, state: &mut H) {
+		self.cells.hash(state);
 	}
 }
 
-impl Ord for StateUnknown {
-	fn cmp(&self, other: &Self) -> cmp::Ordering {
-		self.score.cmp(&other.score).reverse()
-	}
-}
-
-impl PartialEq for StateUnknown {
+impl PartialEq for State {
 	fn eq(&self, other: &Self) -> bool {
-		self.score == other.score
+		self.cells == other.cells
 	}
 }
 
-impl Eq for StateUnknown {}
+impl Eq for State {}
 
-impl fmt::Display for StateUnknown {
+impl Borrow<Vec<u8>> for State {
+	fn borrow(&self) -> &Vec<u8> {
+		&self.cells
+	}
+}
+
+impl fmt::Display for State {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		let mut output = String::new();
 		for i in 0..self.size as i32 {

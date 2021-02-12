@@ -1,6 +1,6 @@
 use crate::puzzle;
 
-pub type Heuristic = fn(&puzzle::StateUnknown, &puzzle::StateUnknown) -> i32;
+pub type Heuristic = fn(&puzzle::State, &puzzle::State) -> i32;
 
 impl super::Tool for Heuristic {
 	const DEFAULT: &'static str = "linear_conflict+manhattan";
@@ -8,7 +8,7 @@ impl super::Tool for Heuristic {
 	const FN_LIST: [Self; 3] = [hamming, manhattan, linear_conflict_manhattan];
 }
 
-pub fn manhattan(a: &puzzle::StateUnknown, b: &puzzle::StateUnknown) -> i32 {
+pub fn manhattan(a: &puzzle::State, b: &puzzle::State) -> i32 {
 	let mut manhattan = 0;
 	let n = a.size() as i32;
 	for x in 0..n {
@@ -25,7 +25,7 @@ pub fn manhattan(a: &puzzle::StateUnknown, b: &puzzle::StateUnknown) -> i32 {
 	return manhattan;
 }
 
-pub fn hamming(a: &puzzle::StateUnknown, b: &puzzle::StateUnknown) -> i32 {
+pub fn hamming(a: &puzzle::State, b: &puzzle::State) -> i32 {
 	let mut hamming = 0;
 	let n = a.size() as i32;
 	for x in 0..n {
@@ -42,7 +42,7 @@ pub fn hamming(a: &puzzle::StateUnknown, b: &puzzle::StateUnknown) -> i32 {
 	return hamming;
 }
 
-pub fn linear_conflict_manhattan(a: &puzzle::StateUnknown, b: &puzzle::StateUnknown) -> i32 {
+pub fn linear_conflict_manhattan(a: &puzzle::State, b: &puzzle::State) -> i32 {
 	let mut manhattan = 0;
 	let mut linear_confict = 0;
 	let n = a.size() as i32;

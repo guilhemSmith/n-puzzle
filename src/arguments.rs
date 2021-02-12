@@ -56,7 +56,6 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 				.long("dimension")
 				.value_name("NUMBER")
 				.possible_values(&["3", "4", "5", "6", "7"])
-				.hide_possible_values(true)
 				.number_of_values(1)
 				.multiple(false)
 				.conflicts_with("file")

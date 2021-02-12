@@ -6,11 +6,13 @@ pub use search_type::SearchType;
 use crate::puzzle;
 
 use colored::*;
-use std::collections::{BinaryHeap, HashSet};
+use priority_queue::PriorityQueue;
+use std::cmp::Reverse;
+use std::collections::HashSet;
 
 const DYN_WEIGHTS: [f32; 5] = [1.0, 1.5, 2.5, 4.0, 10.0];
 
-pub fn has_solution(start: &puzzle::StateUnknown, goal: &puzzle::StateUnknown) -> bool {
+pub fn has_solution(start: &puzzle::State, goal: &puzzle::State) -> bool {
 	let inversions = start.count_inversion(&goal);
 	if start.size() % 2 == 0 {
 		let empty_row = start.row_of_empty(&goal);
@@ -53,44 +55,42 @@ pub trait Tool: Sized + Copy {
 }
 
 pub fn w_a_star(
-	mut start: puzzle::StateUnknown,
-	goal: puzzle::StateUnknown,
+	mut start: puzzle::State,
+	goal: puzzle::State,
 	distance: Heuristic,
 	score: SearchType,
 	weight: f32,
 ) -> puzzle::Solution {
-	let mut closed_set: HashSet<puzzle::StateUsed> = HashSet::new();
-	let mut open_queue: BinaryHeap<puzzle::StateUnknown> = BinaryHeap::new();
+	let mut closed_set: HashSet<puzzle::State> = HashSet::new();
+	let mut open_queue: PriorityQueue<puzzle::State, Reverse<i32>> = PriorityQueue::new();
 	let mut solution = puzzle::Solution::new();
 	let weight_scaled: i32 = (100.0 * weight).round() as i32;
 
-	*(start.score_mut()) = score(0, distance(&start, &goal), weight_scaled);
-	open_queue.push(start);
-	while let Some(current_state) = open_queue.pop() {
-		let current_used = (&current_state).into();
+	let s_score = score(0, distance(&start, &goal), weight_scaled);
+	*(start.score_mut()) = s_score;
+	open_queue.push(start, Reverse(s_score));
+	while let Some((current_state, _)) = open_queue.pop() {
 		if current_state.cells() == goal.cells() {
-			return solution.build_solution(closed_set, current_used);
+			return solution.build_solution(closed_set, current_state);
 		}
 		for mut neighbor in current_state.neighbors() {
 			*(neighbor.cost_mut()) = current_state.cost() + 1;
-			*(neighbor.score_mut()) =
-				score(*neighbor.cost(), distance(&neighbor, &goal), weight_scaled);
+			let n_score = score(*neighbor.cost(), distance(&neighbor, &goal), weight_scaled);
+			*(neighbor.score_mut()) = n_score;
 			if !(closed_set.contains(neighbor.cells())
-				|| open_queue.iter().any(|state| {
+				|| open_queue.iter().any(|(state, _)| {
 					state.cells() == neighbor.cells() && state.cost() <= neighbor.cost()
 				})) {
-				if let Some(index) = open_queue
+				if open_queue
 					.iter()
-					.position(|state| state.cells() == neighbor.cells())
+					.any(|(state, _)| state.cells() == neighbor.cells())
 				{
-					let mut tmp = open_queue.into_vec();
-					tmp.remove(index);
-					open_queue = BinaryHeap::from(tmp);
+					open_queue.remove(&neighbor);
 				}
-				open_queue.push(neighbor);
+				open_queue.push(neighbor, Reverse(n_score));
 			}
 		}
-		if !closed_set.insert(current_used) {
+		if !closed_set.insert(current_state) {
 			return solution;
 		}
 		solution.update_complexity(closed_set.len() + open_queue.len());

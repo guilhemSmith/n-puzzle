@@ -3,7 +3,7 @@ use std::collections::HashSet;
 pub struct Solution {
 	time_complexity: usize,
 	size_complexity: usize,
-	moves: Option<Vec<super::StateUsed>>,
+	moves: Option<Vec<super::State>>,
 }
 
 impl Solution {
@@ -24,8 +24,8 @@ impl Solution {
 
 	pub fn build_solution(
 		self,
-		mut closed_set: HashSet<super::StateUsed>,
-		last_state: super::StateUsed,
+		mut closed_set: HashSet<super::State>,
+		last_state: super::State,
 	) -> Self {
 		let time_complexity = self.time_complexity;
 		let size_complexity = self.size_complexity;
@@ -47,7 +47,7 @@ impl Solution {
 		};
 	}
 
-	pub fn moves(&self) -> &Option<Vec<super::StateUsed>> {
+	pub fn moves(&self) -> &Option<Vec<super::State>> {
 		&self.moves
 	}
 

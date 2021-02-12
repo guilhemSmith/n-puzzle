@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 	let args = arguments::get();
 
 	let (size, start, heuristic, search_type, weight) = setup(&args)?;
-	let goal = puzzle::StateUnknown::goal(size);
+	let goal = puzzle::State::goal(size);
 	let split_line = format!(
 		" {:-^size$} ",
 		"",
@@ -62,7 +62,7 @@ fn setup(
 ) -> Result<
 	(
 		usize,
-		puzzle::StateUnknown,
+		puzzle::State,
 		algorithm::Heuristic,
 		algorithm::SearchType,
 		f32,
