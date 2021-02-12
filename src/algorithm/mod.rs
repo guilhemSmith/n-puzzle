@@ -10,7 +10,7 @@ use priority_queue::PriorityQueue;
 use std::cmp::Reverse;
 use std::collections::HashSet;
 
-const DYN_WEIGHTS: [f32; 5] = [1.0, 1.5, 2.5, 4.0, 10.0];
+const DYN_WEIGHTS: [f32; 5] = [1.0, 1.35, 2.5, 4.0, 10.0];
 
 pub fn has_solution(start: &puzzle::State, goal: &puzzle::State) -> bool {
 	let inversions = start.count_inversion(&goal);
@@ -77,17 +77,14 @@ pub fn w_a_star(
 			*(neighbor.cost_mut()) = current_state.cost() + 1;
 			let n_score = score(*neighbor.cost(), distance(&neighbor, &goal), weight_scaled);
 			*(neighbor.score_mut()) = n_score;
-			if !(closed_set.contains(neighbor.cells())
-				|| open_queue.iter().any(|(state, _)| {
-					state.cells() == neighbor.cells() && state.cost() <= neighbor.cost()
-				})) {
-				if open_queue
-					.iter()
-					.any(|(state, _)| state.cells() == neighbor.cells())
-				{
-					open_queue.remove(&neighbor);
+			if !closed_set.contains(neighbor.cells()) {
+				if let Some((state_existing, _)) = open_queue.get(&neighbor) {
+					if state_existing.cost() > neighbor.cost() {
+						open_queue.push(neighbor, Reverse(n_score));
+					}
+				} else {
+					open_queue.push(neighbor, Reverse(n_score));
 				}
-				open_queue.push(neighbor, Reverse(n_score));
 			}
 		}
 		if !closed_set.insert(current_state) {
