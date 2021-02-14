@@ -40,7 +40,7 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 			clap::Arg::with_name("weight")
 				.short("w")
 				.long("weight")
-				.value_name("FLOATING NUMBER")
+				.value_name("FLOATING_NUMBER")
 				.validator(|raw| {
 					raw.parse::<f32>()
 						.map(|_| ())
