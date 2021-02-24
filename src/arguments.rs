@@ -58,12 +58,12 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 				.validator(|raw| {
 					raw.parse::<usize>()
 						.map_err(|_| String::from("not a valid number"))
-						.and_then(|n| (n > 2).then(|| ()).ok_or(String::from("number below 3")))
+						.and_then(|n| (n > 2 && n < 11).then(|| ()).ok_or(String::from("number below 3 or above 10")))
 				})
 				.number_of_values(1)
 				.multiple(false)
 				.conflicts_with("file")
-				.help("The dimension of the puzzle to generate, it will have dimension x dimension cells (int greater than 2)"),
+				.help("The dimension of the puzzle to generate, it will have dimension x dimension cells (int between 3 and 10 both included)"),
 		)
 		.arg(
 			clap::Arg::with_name("without_solution")
