@@ -24,7 +24,7 @@ pub fn has_solution(start: &puzzle::State, goal: &puzzle::State) -> bool {
 
 pub fn dynamic_weight(size: usize) -> f32 {
 	if size > 7 {
-		10.0
+		10.0 * (size - 6) as f32
 	} else {
 		DYN_WEIGHTS[size - 3]
 	}
