@@ -7,7 +7,14 @@ use algorithm::Tool;
 use colored::*;
 use std::error;
 
-fn main() -> Result<(), Box<dyn error::Error>> {
+fn main() {
+	match wrapped_main() {
+		Ok(()) => {}
+		Err(boxed) => eprintln!("{}{}", "[Error]".red(), boxed),
+	}
+}
+
+fn wrapped_main() -> Result<(), Box<dyn error::Error>> {
 	let args = arguments::get();
 
 	let (size, start, heuristic, search_type, weight) = setup(&args)?;
@@ -57,6 +64,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 	);
 	Ok(())
 }
+
 fn setup(
 	args: &clap::ArgMatches,
 ) -> Result<
