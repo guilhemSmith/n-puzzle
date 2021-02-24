@@ -1,5 +1,6 @@
 use crate::puzzle;
 
+use std::collections::HashSet;
 use std::convert;
 use std::error;
 use std::fmt;
@@ -25,6 +26,7 @@ pub fn from_file(filename: &str) -> Result<(usize, puzzle::State), Error> {
 	let reader = io::BufReader::new(file);
 	let mut size = None;
 	let mut cells = Vec::new();
+	let mut unordered_cells = HashSet::new();
 
 	for line in reader.lines() {
 		let line = line?;
@@ -37,7 +39,11 @@ pub fn from_file(filename: &str) -> Result<(usize, puzzle::State), Error> {
 				cells = Vec::with_capacity(vec_size * vec_size);
 			}
 		} else {
-			cells.append(&mut read_cells(line, size.ok_or(Error::NoSizeSpecified)?)?);
+			cells.append(&mut read_cells(
+				line,
+				&mut unordered_cells,
+				size.ok_or(Error::NoSizeSpecified)?,
+			)?);
 		}
 	}
 	let fixed_size = size.ok_or(Error::NoSizeSpecified)?;
@@ -59,7 +65,11 @@ fn read_size(line: String) -> Result<Option<usize>, Error> {
 	return Ok(None);
 }
 
-fn read_cells(line: String, size: usize) -> Result<Vec<u8>, Error> {
+fn read_cells(
+	line: String,
+	unordered_cells: &mut HashSet<u8>,
+	size: usize,
+) -> Result<Vec<u8>, Error> {
 	let mut row = Vec::with_capacity(size);
 	let cleared_line = clear_line(&line);
 
@@ -69,7 +79,12 @@ fn read_cells(line: String, size: usize) -> Result<Vec<u8>, Error> {
 			return Err(Error::SizeNotRespected(size, row_size));
 		}
 		for cell in cleared_line {
-			row.push(cell.parse()?);
+			let tile = cell.parse()?;
+			if (tile as usize) >= (size * size) || unordered_cells.contains(&tile) {
+				return Err(Error::InvalidTile(tile));
+			}
+			unordered_cells.insert(tile);
+			row.push(tile);
 		}
 	}
 	return Ok(row);
@@ -86,6 +101,7 @@ pub enum Error {
 	SizeNotRespected(usize, usize),
 	SizeNotBigEnough(usize),
 	InvalidNumber(num::ParseIntError),
+	InvalidTile(u8),
 	BadPuzzle,
 }
 
@@ -106,6 +122,9 @@ impl fmt::Display for Error {
 			),
 			Error::InvalidNumber(parse_error) => {
 				write!(f, "Invalid Number could not be parsed: {}", parse_error)
+			}
+			Error::InvalidTile(tile) => {
+				write!(f, "Invalid Tile already used or too big: {}", tile)
 			}
 			Error::BadPuzzle => write!(
 				f,
