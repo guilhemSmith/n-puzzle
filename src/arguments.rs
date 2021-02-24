@@ -55,11 +55,15 @@ pub fn get<'a>() -> clap::ArgMatches<'a> {
 				.short("d")
 				.long("dimension")
 				.value_name("NUMBER")
-				.possible_values(&["3", "4", "5", "6", "7"])
+				.validator(|raw| {
+					raw.parse::<usize>()
+						.map_err(|_| String::from("not a valid number"))
+						.and_then(|n| (n > 2).then(|| ()).ok_or(String::from("number below 3")))
+				})
 				.number_of_values(1)
 				.multiple(false)
 				.conflicts_with("file")
-				.help("The dimension of the puzzle to generate, it will have dimension x dimension cells"),
+				.help("The dimension of the puzzle to generate, it will have dimension x dimension cells (int greater than 2)"),
 		)
 		.arg(
 			clap::Arg::with_name("without_solution")
