@@ -31,9 +31,10 @@ pub fn from_file(filename: &str) -> Result<(usize, puzzle::State), Error> {
 		if size.is_none() {
 			size = read_size(line)?;
 			if size.is_some() {
-				cells = Vec::with_capacity(
-					size.ok_or(Error::NoSizeSpecified)? * size.ok_or(Error::NoSizeSpecified)?,
-				);
+				let vec_size = size
+					.ok_or(Error::NoSizeSpecified)
+					.and_then(|s| (s > 2).then(|| s).ok_or(Error::SizeNotBigEnough(s)))?;
+				cells = Vec::with_capacity(vec_size * vec_size);
 			}
 		} else {
 			cells.append(&mut read_cells(line, size.ok_or(Error::NoSizeSpecified)?)?);
@@ -83,6 +84,7 @@ pub enum Error {
 	NoSizeSpecified,
 	FailedFileReading(io::Error),
 	SizeNotRespected(usize, usize),
+	SizeNotBigEnough(usize),
 	InvalidNumber(num::ParseIntError),
 	BadPuzzle,
 }
@@ -91,6 +93,11 @@ impl fmt::Display for Error {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		return match self {
 			Error::NoSizeSpecified => write!(f, "An invalid size was specified for this puzzle"),
+			Error::SizeNotBigEnough(size) => write!(
+				f,
+				"This puzzle has a size too small (got {}, expected 3 or more)",
+				size
+			),
 			Error::FailedFileReading(io_err) => write!(f, "Could not read the file: {}", io_err),
 			Error::SizeNotRespected(expected, found) => write!(
 				f,
