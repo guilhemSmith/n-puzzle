@@ -42,7 +42,7 @@ The ouput follow the snail format, the following example is a solved dimension 3
 ### OPTIONS
 | short | long          | value           | description                                                                                                                                                                      |
 | ----- | ------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| -d    | --dimension   | NUMBER          | The dimension of the puzzle to generate, it will have dimension x dimension cells (possible values: 3, 4, 5, 6, 7)                                                               |
+| -d    | --dimension   | NUMBER          | The dimension of the puzzle to generate, it will have dimension x dimension cells (int between 3 and 10 both included)                                                           |
 | -f    | --file        | FILENAME        | The file to read the puzzle from                                                                                                                                                 |
 | -h    | --heuristic   | HEURISTIC       | The heuristic used to estimate the distance of each state to the goal (default: linear_conflict+manhattan) (possible values: hamming, manhattan,linear_conflict+manhattan)       |
 | -i    | --iterations  | NUMBER          | The number of iterations to do when generating a puzzle                                                                                                                          |
